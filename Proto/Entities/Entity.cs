@@ -18,6 +18,8 @@ namespace Proto.Entities
         override public string ToString() {
             return "(" + x + "," + y + ")";
         }
+
+        public static Vector2 zero = new Vector2(0,0);
     }
 
     abstract class Entity

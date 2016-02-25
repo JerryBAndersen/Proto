@@ -38,8 +38,8 @@ namespace Proto
                 {
                     if (en.GetType() == typeof(Village))
                     {
-                        Console.WriteLine("Village " + ((Village)en).name + " has:");
-                        Console.WriteLine(((Village)en).inventory.GetReport());
+                        //Console.WriteLine("Village " + ((Village)en).name + " has:");
+                        //Console.WriteLine(((Village)en).inventory.GetReport());
                     }
                     if (en.GetType() == typeof(Hero))
                     {
@@ -85,6 +85,19 @@ namespace Proto
                 }
             }
             return entsAtLoc.ToArray();
+        }
+
+        public static Vector2 GetRandomLocation() {
+            int i = (int) (ents.OfType<Village>().Count() * new Random().NextDouble());
+            foreach (Village v in ents.OfType<Village>()) {
+                if (i > 0) {
+                    i--;
+                }
+                else {
+                    return v.location;
+                }
+            }
+            return Vector2.zero;
         }
     }
 }

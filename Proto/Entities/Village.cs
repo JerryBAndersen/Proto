@@ -20,7 +20,7 @@ namespace Proto.Entities
 
         public override void Update()
         {
-            if (Program.gtime % 7 == 0)
+            if (Program.gtime % (7 + (int.Parse(id) % 2)) == 0)
             {
                 if (inventory.SCount(typeof(Food)) < 9) {
                     inventory.AddStorable(4, typeof(Food));
