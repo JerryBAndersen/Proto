@@ -27,18 +27,22 @@ namespace Proto.Entities
 
         public override void Update()
         {
+            Console.WriteLine("Hero " + name + " has:");
+            Console.WriteLine(inventory.GetReport());
+            Console.WriteLine(party.GetReport());
+
             if (health <= 0) {
                 Destroy();
             }
             if (Program.gtime % Program.foodRate == 0) {
-                party.UpdateConsumtion();
+                party.UpdateConsumtion(inventory);
             }
 
             // this heros priority
             priority = typeof(Man);
 
             // if food is sufficient
-            if (party.SCount(typeof(Man)) + 1 < inventory.SCount(typeof(Food)))
+            if (party.SCount() + 1 < inventory.SCount(typeof(Food)))
             {
                 priority = typeof(Man);
             }
@@ -59,7 +63,7 @@ namespace Proto.Entities
                             if (h.inventory.SCount(typeof(Man)) >
                             inventory.SCount(typeof(Man))) {
                                 // kill his men
-                                h.inventory.RemoveStorable(typeof(Man), h.inventory.SCount(typeof(Man)));
+                                h.party.RemoveStorable(typeof(Man), h.party.SCount(typeof(Man)));
                                 // steal his food
                                 int fdcnt = h.inventory.SCount(typeof(Food));
                                 h.inventory.RemoveStorable(typeof(Food), h.inventory.SCount(typeof(Food)));
@@ -69,13 +73,17 @@ namespace Proto.Entities
                                 inventory.AddStorable(Math.Min(inventory.FreeSlots(), fdcnt), typeof(Food));
                                 return;
                             }
+                            else {
+                                break;
+                            }
                         }
                     }
                 }
 
-                if (v.inventory.SCount(priority) > 0)
+                if (v.inventory.SCount(priority) > 0 || v.party.SCount(priority) > 0)
                 {
-                    if (v.inventory.TransferAllOfType(priority, inventory))
+                    if (v.inventory.TransferAllOfType(priority, inventory) &&
+                        v.party.TransferAllOfType(priority, party))
                     {
                         Console.WriteLine("Transfered all from village " + v.id + " to Hero " + name);
                     }
@@ -91,15 +99,18 @@ namespace Proto.Entities
             int cnt = 0;
             foreach (Village v in Program.ents.OfType<Village>()) {
                 // if there is something in the village and there is no other hero on it
-                if (v.inventory.SCount(priority) > 4 && Program.GetByLocation(v.location).OfType<Hero>().Count() < 1 && cnt - ran > 0) {
-                    location = v.location;
-                    Console.WriteLine("Changed Location to " + location);
-                    return;
+                if (Program.GetByLocation(v.location).OfType<Hero>().Count() < 1 && cnt - ran > 0) {
+                    if (v.inventory.SCount(priority) > 4 || v.party.SCount(priority) > 2) {
+                        location = v.location;
+                        Console.WriteLine("Changed Location to " + location);
+                        return;
+                    }
                 } else if (Program.GetByLocation(v.location).OfType<Hero>().Count() > 0) {
                     // theres a hero on there
                     foreach (Hero h in Program.GetByLocation(v.location).OfType<Hero>()) {
-                        if (h.inventory.SCount(typeof(Man)) > 
-                            inventory.SCount(typeof(Man))) {
+                        if (h.party.SCount(typeof(Man)) > 
+                            party.SCount(typeof(Man))) {
+                            // and he's weaker than this hero
                             location = v.location;
                             Console.WriteLine("Changed Location to " + location);
                             return;

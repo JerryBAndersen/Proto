@@ -10,9 +10,11 @@ namespace Proto.Entities
     class Village : Entity, Destroyable
     {
         public Inventory inventory;
+        public Inventory party;
 
         public Village(Vector2 loc) {
             inventory = new Inventory(32, id);
+            party = new Inventory(32, id);
             name = id;
             location = loc;
             Console.WriteLine("Created village " + name + " at " + location);
@@ -25,8 +27,8 @@ namespace Proto.Entities
                 if (inventory.SCount(typeof(Food)) < 9) {
                     inventory.AddStorable(4, typeof(Food));
                 }
-                if (inventory.SCount(typeof(Man)) < 5) {
-                    inventory.AddStorable(1, typeof(Man));
+                if (party.SCount() < 5) {
+                    party.AddStorable(1, typeof(Man));
                 }
             }
 

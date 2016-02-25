@@ -17,8 +17,8 @@ namespace Proto
         {
             Console.WriteLine("Proto!");
             ents = new List<Entity>();
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 4; x++) {
+                for (int y = 0; y < 4; y++) {
                     ents.Add(new Village(new Vector2(x, y)));
                 }
             }
@@ -40,11 +40,7 @@ namespace Proto
                     {
                         //Console.WriteLine("Village " + ((Village)en).name + " has:");
                         //Console.WriteLine(((Village)en).inventory.GetReport());
-                    }
-                    if (en.GetType() == typeof(Hero))
-                    {
-                        Console.WriteLine("Hero " + ((Hero)en).name + " has:");
-                        Console.WriteLine(((Hero)en).inventory.GetReport());
+                        //Console.WriteLine(((Village)en).party.GetReport());
                     }
                 }
 

@@ -149,7 +149,7 @@ namespace Proto.Entities
             }
         }
 
-        public void UpdateConsumtion()
+        public void UpdateConsumtion(Inventory foodsource)
         {
             int consumes = 0;
             int starves = 0;
@@ -157,7 +157,7 @@ namespace Proto.Entities
             // consume Food
             int demand = storables.OfType<Man>().Count() - new Random().Next(storables.OfType<Man>().Count()/4);
             for (int i = 0; i < demand; i++) {
-                if (RemoveStorable(typeof(Food)))
+                if (foodsource.RemoveStorable(typeof(Food)))
                 {
                     consumes++;
                 }
@@ -180,9 +180,15 @@ namespace Proto.Entities
             //foreach (Storable stor in storables) {
             //    s += stor.GetName() + " ";
             //}
-            s += "Men: " + SCount(typeof(Man)) + " ";
-            s += "Food: " + SCount(typeof(Food)) + " ";
-            s += "Gold: " + SCount(typeof(Gold));
+            if (SCount(typeof(Man)) > 0) {
+                s += "Men: " + SCount(typeof(Man)) + " ";
+            }
+            if (SCount(typeof(Food)) > 0) {
+                s += "Food: " + SCount(typeof(Food)) + " ";
+            }
+            if (SCount(typeof(Gold)) > 0) {
+                s += "Gold: " + SCount(typeof(Gold));
+            }
             return s;
         }
 
