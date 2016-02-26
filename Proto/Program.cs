@@ -29,11 +29,12 @@ namespace Proto
             while (true)
             {
                 Console.WriteLine("\nTick.");
+                // handle movement and gathering of men/food
                 foreach (Entity en in ents)
                 {
                     en.Update();
                 }
-
+                // handle hero collisions and robbing
                 foreach (Entity en in ents)
                 {                    
                     if (en.GetType() == typeof(Village))
