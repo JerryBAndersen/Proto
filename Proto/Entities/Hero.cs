@@ -14,7 +14,7 @@ namespace Proto.Entities
 
         public Hero(Vector2 loc) {
             location = loc;
-            inventory = new Inventory(128, id);
+            inventory = new Inventory(256, id);
             party = new Inventory(128, id);
             name = id;
         }
@@ -54,31 +54,7 @@ namespace Proto.Entities
             Console.WriteLine("Location: " + location.ToString());
 
             // empty villag(es) at this location
-            foreach (Village v in Program.GetByLocation(location).OfType<Village>()) {
-                // is there a hero on here
-                if (Program.GetByLocation(v.location).OfType<Hero>().Count() > 0 ) {
-                    // theres a hero on here
-                    foreach (Hero h in Program.GetByLocation(v.location).OfType<Hero>()) {
-                        if (h.id != this.id) {
-                            if (h.inventory.SCount(typeof(Man)) >
-                            inventory.SCount(typeof(Man))) {
-                                // kill his men
-                                h.party.RemoveStorable(typeof(Man), h.party.SCount(typeof(Man)));
-                                // steal his food
-                                int fdcnt = h.inventory.SCount(typeof(Food));
-                                h.inventory.RemoveStorable(typeof(Food), h.inventory.SCount(typeof(Food)));
-                                // banish him
-                                h.location = Program.GetRandomLocation();
-                                // add only as much as hero can carry
-                                inventory.AddStorable(Math.Min(inventory.FreeSlots(), fdcnt), typeof(Food));
-                                return;
-                            }
-                            else {
-                                break;
-                            }
-                        }
-                    }
-                }
+            foreach (Village v in Program.GetByLocation(location).OfType<Village>()) {             
 
                 if (v.inventory.SCount(priority) > 0 || v.party.SCount(priority) > 0)
                 {
@@ -99,24 +75,13 @@ namespace Proto.Entities
             int cnt = 0;
             foreach (Village v in Program.ents.OfType<Village>()) {
                 // if there is something in the village and there is no other hero on it
-                if (Program.GetByLocation(v.location).OfType<Hero>().Count() < 1 && cnt - ran > 0) {
+                if (cnt - ran > 0) {
                     if (v.inventory.SCount(priority) > 4 || v.party.SCount(priority) > 2) {
                         location = v.location;
                         Console.WriteLine("Changed Location to " + location);
                         return;
                     }
-                } else if (Program.GetByLocation(v.location).OfType<Hero>().Count() > 0) {
-                    // theres a hero on there
-                    foreach (Hero h in Program.GetByLocation(v.location).OfType<Hero>()) {
-                        if (h.party.SCount(typeof(Man)) > 
-                            party.SCount(typeof(Man))) {
-                            // and he's weaker than this hero
-                            location = v.location;
-                            Console.WriteLine("Changed Location to " + location);
-                            return;
-                        }
-                    }
-                }
+                } 
                 cnt++;
             }
         }

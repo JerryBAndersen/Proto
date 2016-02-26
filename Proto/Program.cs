@@ -17,12 +17,12 @@ namespace Proto
         {
             Console.WriteLine("Proto!");
             ents = new List<Entity>();
-            for (int x = 0; x < 4; x++) {
-                for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 20; x++) {
+                for (int y = 0; y < 20; y++) {
                     ents.Add(new Village(new Vector2(x, y)));
                 }
             }
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 20; i++) {
                 ents.Add(new Hero(new Vector2(i, -1f)));
             }
 
@@ -35,12 +35,24 @@ namespace Proto
                 }
 
                 foreach (Entity en in ents)
-                {
+                {                    
                     if (en.GetType() == typeof(Village))
                     {
-                        //Console.WriteLine("Village " + ((Village)en).name + " has:");
-                        //Console.WriteLine(((Village)en).inventory.GetReport());
-                        //Console.WriteLine(((Village)en).party.GetReport());
+                        Hero winner = null;
+                        foreach (Hero h in GetByLocation(en.location, typeof(Hero))) {
+                            if (winner == null) {
+                                winner = h;
+                            }
+                            if (winner.party.SCount() < h.party.SCount()) {
+                                winner.inventory.TransferAll(h.inventory);
+                                winner.party.RemoveStorable(typeof(Man), winner.party.SCount(typeof(Man)));
+                                winner.location = GetRandomLocation();
+                                Console.WriteLine("Hero " + h.name + " robbed hero " + winner.name);
+                                winner = h;
+
+                            }
+                        }
+
                     }
                 }
 
@@ -77,6 +89,26 @@ namespace Proto
             {
                 if (en.location.Equals(loc))
                 {
+                    entsAtLoc.Add(en);
+                }
+            }
+            return entsAtLoc.ToArray();
+        }
+
+        public static Entity[] GetByLocation(Vector2 loc, Type t) {
+            List<Entity> entsAtLoc = new List<Entity>();
+            foreach (Entity en in ents) {
+                if (en.GetType() == t & en.location.Equals(loc)) {
+                    entsAtLoc.Add(en);
+                }
+            }
+            return entsAtLoc.ToArray();
+        }
+
+        public static Entity[] GetByType(Type t) {
+            List<Entity> entsAtLoc = new List<Entity>();
+            foreach (Entity en in ents) {
+                if (en.GetType() == t) {
                     entsAtLoc.Add(en);
                 }
             }
