@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Proto.Interfaces
+namespace Proto.Storables
 {
-    interface Destroyable
+    class Food : Storable
     {
-        void Destroy();
-
     }
 }

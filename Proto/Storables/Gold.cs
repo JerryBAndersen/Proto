@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Proto.Interfaces
+namespace Proto.Storables
 {
-    interface Storable
+    class Gold : Storable
     {
-        string GetName();
     }
 }

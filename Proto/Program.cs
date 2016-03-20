@@ -1,132 +1,99 @@
 ﻿using Proto.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Proto
 {
     class Program
     {
-        public static int gtime = 0;
-        public static List<Entity> ents;
-        public static int foodRate = 7;
-        static int id;
+        static int lastId = 0;
+        static List<Entity> entities;
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Proto!");
-            ents = new List<Entity>();
-            for (int x = 0; x < 20; x++) {
-                for (int y = 0; y < 20; y++) {
-                    ents.Add(new Village(new Vector2(x, y)));
-                }
+            entities = new List<Entity>();
+            Town[] towns = new Town[64];
+            for (int i = 0; i < towns.Length; i++) {
+                towns[i] = new Town("Saint " + NumberToWords(GetId()),new Vector2(0,GetId()));
             }
-            for (int i = 0; i < 20; i++) {
-                ents.Add(new Hero(new Vector2(i, -1f)));
+            entities.AddRange(towns);
+
+            Hero[] heroes = new Hero[6];
+            for (int i = 0; i < heroes.Length; i++) {
+                heroes[i] = new Hero("Lord " + NumberToWords(GetId()), 3, new Vector2());
             }
+            entities.AddRange(heroes);
 
-            while (true)
-            {
-                Console.WriteLine("\nTick.");
-                // handle movement and gathering of men/food
-                foreach (Entity en in ents)
+            while (Console.ReadKey().Key != ConsoleKey.Escape) {
+                Console.WriteLine("Tick.");
+                foreach (Hero h in entities.FindAll(h=>typeof(Hero) == h.GetType())) {
+                    Console.WriteLine(h.name + " is at " + h.position.ToString());
+                }
+                foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType()))
                 {
-                    en.Update();
+                    Console.WriteLine(t.name + " is at " + t.position.ToString());
                 }
-                // handle hero collisions and robbing
-                foreach (Entity en in ents)
-                {                    
-                    if (en.GetType() == typeof(Village))
-                    {
-                        Hero winner = null;
-                        foreach (Hero h in GetByLocation(en.location, typeof(Hero))) {
-                            if (winner == null) {
-                                winner = h;
-                            }
-                            if (winner.party.SCount() < h.party.SCount()) {
-                                winner.inventory.TransferAll(h.inventory);
-                                winner.party.RemoveStorable(typeof(Man), winner.party.SCount(typeof(Man)));
-                                winner.location = GetRandomLocation();
-                                Console.WriteLine("Hero " + h.name + " robbed hero " + winner.name);
-                                winner = h;
-
-                            }
-                        }
-
-                    }
-                }
-
-                ConsoleKeyInfo c = Console.ReadKey();
-                if (c.Key == ConsoleKey.Spacebar)
-                {
-                    break;
-                }
-                gtime++;
             }
         }
 
-        public static string GetNewID()
+        public static int GetId() {
+            return lastId++;
+        }
+
+        public static void Kill(Hero h) {
+            entities[entities.IndexOf(h)] = new DeadHero(h);
+        }
+        public static void Kill(Town t) {
+            entities[entities.IndexOf(t)] = new DeadTown(t);
+        }
+
+        public static string NumberToWords(int number)
         {
-            return "" + id++;
-        }
+            if (number == 0)
+                return "zero";
 
-        public static Entity GetByID(string id)
-        {
-            foreach (Entity en in ents)
+            if (number < 0)
+                return "minus " + NumberToWords(Math.Abs(number));
+
+            string words = "";
+
+            if ((number / 1000000) > 0)
             {
-                if (en.id == id)
-                {
-                    return en;
-                }
+                words += NumberToWords(number / 1000000) + " million ";
+                number %= 1000000;
             }
-            return null;
-        }
 
-        public static Entity[] GetByLocation(Vector2 loc)
-        {
-            List<Entity> entsAtLoc = new List<Entity>();
-            foreach (Entity en in ents)
+            if ((number / 1000) > 0)
             {
-                if (en.location.Equals(loc))
+                words += NumberToWords(number / 1000) + " thousand ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += NumberToWords(number / 100) + " hundred ";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != "")
+                    words += "and ";
+
+                var unitsMap = new[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
+                var tensMap = new[] { "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
                 {
-                    entsAtLoc.Add(en);
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += "-" + unitsMap[number % 10];
                 }
             }
-            return entsAtLoc.ToArray();
-        }
 
-        public static Entity[] GetByLocation(Vector2 loc, Type t) {
-            List<Entity> entsAtLoc = new List<Entity>();
-            foreach (Entity en in ents) {
-                if (en.GetType() == t & en.location.Equals(loc)) {
-                    entsAtLoc.Add(en);
-                }
-            }
-            return entsAtLoc.ToArray();
+            return words;
         }
-
-        public static Entity[] GetByType(Type t) {
-            List<Entity> entsAtLoc = new List<Entity>();
-            foreach (Entity en in ents) {
-                if (en.GetType() == t) {
-                    entsAtLoc.Add(en);
-                }
-            }
-            return entsAtLoc.ToArray();
-        }
-
-        public static Vector2 GetRandomLocation() {
-            int i = (int) (ents.OfType<Village>().Count() * new Random().NextDouble());
-            foreach (Village v in ents.OfType<Village>()) {
-                if (i > 0) {
-                    i--;
-                }
-                else {
-                    return v.location;
-                }
-            }
-            return Vector2.zero;
-        }
-    }
+    }        
 }
