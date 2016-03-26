@@ -12,9 +12,16 @@ namespace Proto.Misc {
             this.Capacity = capacity;
         }
 
-        void Transfer<T>(Storable storable, Inventory to) {
+        public void Transfer(Storable storable, Inventory to) {
             to.Add(storable);
             this.Remove(storable);
+        }
+
+        public void TransferAll(Inventory to) {
+            foreach (Storable s in this) {
+                to.Add(s);
+                this.Remove(s);
+            }
         }
     }
 }

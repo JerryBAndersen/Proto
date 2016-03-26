@@ -11,7 +11,7 @@ namespace Proto.Entities
     {
         public Hero() {
             this.strength = 1;
-            this.inventory = new Inventory(100);
+            this.inventory = new Inventory(10);
             money = new Inventory(10000);
             party = new Inventory(1000);
             promises = new Inventory(10);
@@ -24,12 +24,12 @@ namespace Proto.Entities
             this.position = position;
         }
 
-        void Move(Vector2 destination)
+        public void Move(Vector2 destination)
         {
             position = destination;
         }
 
-        void CreatePromise() {
+        public void CreatePromise() {
 
         }
     }

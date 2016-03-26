@@ -8,7 +8,7 @@ namespace Proto.Storables
 {
     class Storable
     {
-        enum ID {
+        public enum ID {
             Food = 0,
             Gold = 1,
             Man = 2,

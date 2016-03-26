@@ -48,6 +48,7 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\Hero.cs" />
     <Compile Include="Entities\Town.cs" />
+    <Compile Include="InvalidInputException.cs" />
     <Compile Include="Misc\Inventory.cs" />
     <Compile Include="Misc\Offer.cs" />
     <Compile Include="Program.cs" />

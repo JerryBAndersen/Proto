@@ -46,39 +46,29 @@ namespace Proto.Entities
             promises = new Inventory(0);
         }
 
-        void Attack(Entity target) {
+        public void Attack(Entity target) {
             target.health = target.health - Math.Max(0, this.strength - target.strength);
             if (target.health < 1) {
                 Program.Kill(target);
             }
         }
 
-        void Trade(Entity partner) {
-            Offer o = CreateOffer(partner);
+        public bool Trade(Entity partner, Offer o) {
             if (partner.TestOffer(o)) {
                 o.Apply();
-            } else {
-                Console.WriteLine("Denied Offer.");
-            }
-        }
-
-        bool TestOffer(Offer offer) {
-            if (offer.you.strength > (int) (offer.me.strength*1.5f)) {
-                offer.accepted = true;
                 return true;
             } else {
                 return false;
             }
         }
 
-        Offer CreateOffer(Entity you) {
-            Inventory[] mine = { new Inventory(1000), new Inventory(10000), new Inventory(1000), new Inventory(10) };
-            Inventory[] yours = { new Inventory(1000), new Inventory(10000), new Inventory(1000), new Inventory(10) };
-
-            // choose storables or cancel
-
-            Offer offer = new Offer(this, you, mine, yours);
-            return offer;
+        public bool TestOffer(Offer offer) {
+            if (offer.you.strength > (int) (offer.me.strength*1.5f)) {
+                offer.accepted = true;
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }
