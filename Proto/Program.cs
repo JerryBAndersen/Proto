@@ -16,46 +16,62 @@ namespace Proto
 
         static void Main(string[] args)
         {
+            InitializeEntities();
+
+            // Update Loop
+            while (true) {
+                UpdateLogic();
+            }
+        }
+
+        private static void InitializeEntities() {
             entities = new List<Entity>();
 
+            //Hero[] heroes = new Hero[6];
+            //for (int i = 0; i < heroes.Length; i++) {
+            //    heroes[i] = new Hero("Lord " + NumberToWords(lastId + 1), 3, new Vector2());
+            //}
+            //entities.AddRange(heroes);
 
-            Hero[] heroes = new Hero[6];
-            for (int i = 0; i < heroes.Length; i++) {
-                heroes[i] = new Hero("Lord " + NumberToWords(lastId + 1), 3, new Vector2());
-            }
-            entities.AddRange(heroes);
             player = new Hero("Lord Hosenschlitz", 3, new Vector2(0, 1));
             entities.Add(player);
 
             Town[] towns = new Town[64];
             for (int i = 0; i < towns.Length; i++) {
                 double rand = ran.NextDouble() - .5d;
-                towns[i] = new Town("St. " + NumberToWords(lastId+1),new Vector2((int)(100d*rand),GetId()));
+                towns[i] = new Town("St. " + NumberToWords(lastId + 1), new Vector2((int)(100d * rand), GetId()));
             }
-            entities.AddRange(towns);            
-            while (true) {
-                Console.WriteLine("Tick.");
-                foreach (Hero h in entities.FindAll(h=>typeof(Hero) == h.GetType())) {
-                    Console.WriteLine(h.name + " is at " + h.position.ToString());
-                    //Console.WriteLine("And has ID " + h.id);
-                    Console.WriteLine("And has " + h.inventory.Count + " food.");
-                }
-                foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType()))
-                {
-                    if (gtime == 0) {
-                        Console.WriteLine(t.name + " is at " + t.position.ToString());
-                        //Console.WriteLine("And has ID " + t.id);
-                    } 
-                }
-                string input = "";
-                do {
-                    Console.WriteLine("Input:");
-                    input = Console.ReadLine();
-                    PlayerInput(input);
-                } while (!string.IsNullOrEmpty(input));
-                gtime++;
-            }
+            entities.AddRange(towns);
         }
+
+        private static void UpdateLogic() {
+            Console.WriteLine("Tick.");
+
+            // Print Locations
+
+            #region printLocations
+            foreach (Hero h in entities.FindAll(h => typeof(Hero) == h.GetType())) {
+                Console.WriteLine(h.name + " is at " + h.position.ToString());
+                //Console.WriteLine("And has ID " + h.id);
+                Console.WriteLine("And has " + h.inventory.Count + " food.");
+            }
+            foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType())) {
+                if (gtime == 0) {
+                    Console.WriteLine(t.name + " is at " + t.position.ToString());
+                    //Console.WriteLine("And has ID " + t.id);
+                }
+            } 
+            #endregion
+
+            // Input handling
+            string input = "";
+            do {
+                Console.WriteLine("Input:");
+                input = Console.ReadLine();
+                PlayerInput(input);
+            } while (!string.IsNullOrEmpty(input));
+            gtime++;
+        }                
 
         public static void PlayerInput(string input) {
             // MOVE
@@ -90,25 +106,25 @@ namespace Proto
                 Inventory[] mine = { new Inventory(1000), new Inventory(10000), new Inventory(1000), new Inventory(10) };
                 Inventory[] yours = { new Inventory(1000), new Inventory(10000), new Inventory(1000), new Inventory(10) };
 
-                try {
-                    Entity you = ChooseEntity();
+                //try {
+                //    Entity you = ChooseEntity();
 
-                    try {
-                        mine[Storable.ID.Food.GetHashCode()].Add(new Food());
-                    } catch {
-                        throw new InvalidInputException();
-                    }
+                //    try {
+                //        mine[Storable.ID.Food.GetHashCode()].Add(new Food());
+                //    } catch {
+                //        throw new InvalidInputException();
+                //    }
 
-                    Offer offer = new Offer(player, you, mine, yours);
-                    if (you.TestOffer(offer)) {
-                        offer.Apply();
-                        Console.WriteLine("Offer accepted.");
-                    } else {
-                        Console.WriteLine("Offer denied.");
-                    }
-                } catch (InvalidInputException ex) {
-                    Console.WriteLine("Invalid Input.");
-                }
+                //    Offer offer = new Offer(player, you, mine, yours);
+                //    if (you.TestOffer(offer)) {
+                //        offer.Apply();
+                //        Console.WriteLine("Offer accepted.");
+                //    } else {
+                //        Console.WriteLine("Offer denied.");
+                //    }
+                //} catch (InvalidInputException ex) {
+                //    Console.WriteLine("Invalid Input.");
+                //}
             } 
             // ADD FOOD
             else if (input.Contains("addfood")) {
