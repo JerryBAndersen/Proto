@@ -65,6 +65,21 @@ namespace Proto
                     Console.WriteLine(t.name + " is at " + t.position.ToString());
                     //Console.WriteLine("And has ID " + t.id);
                 }
+            }
+            #endregion
+
+            // Handle Dummy AI
+            #region dummyai
+            foreach (Entity h in entities) {
+                if (h != player) {
+                    // Accept all offers given to AI
+                    foreach (Offer o in h.offers) {
+                        if (o.TryApply()) {
+                            o.Apply();
+                            Console.WriteLine(o.you.name + " accepted offer of " + o.me.name + "!");
+                        }
+                    }
+                }
             } 
             #endregion
 
@@ -167,16 +182,21 @@ namespace Proto
                 List<string> hashcodes = inv.ConvertAll<string>(p => p.GetHashCode().ToString());
                 Console.WriteLine("Inventory " + inv.Name + " contents:");
                 for (int i = 0; i < inv.Count; i++) {
-                    Console.WriteLine("item " + i + ": " + hashcodes[i]);
+                    Console.WriteLine("item " + i + ": " + inv[i].GetType().ToString() + " " + hashcodes[i]);
                 }
-                Console.WriteLine("Enter item hashes seperated by spaces:");
+                Console.WriteLine("Enter item hashes or indices seperated by spaces:");
                 string selection = Console.ReadLine();
                 if (!string.IsNullOrEmpty(selection)) {
                     string[] hashes = selection.Split(' ');
-                    foreach (string hash in hashes) {
+                    for (int i = 0; i < hashes.Length; i++) {
                         for (int j = 0; j < hashcodes.Count; j++) {
-                            if (hash == hashcodes[j]) {
+                            int tryint;
+                            if (hashes[i] == hashcodes[j]) {
                                 clone.Add(inv[j]);
+                                break;
+                            } else if (int.TryParse(hashes[i],out tryint) && tryint==j) {
+                                clone.Add(inv[j]);
+                                break;
                             }
                         }
                     }
