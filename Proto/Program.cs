@@ -16,32 +16,6 @@ namespace Proto
 
         static void Main(string[] args)
         {
-<<<<<<< HEAD
-            InitializeWorld();            
-            // Update loop         
-            while (true) {
-                Console.WriteLine("Tick.");
-                Information();                
-                // Input loop
-                string input = "";
-                do {
-                    Console.WriteLine("Input:");
-                    input = Console.ReadLine();
-                    PlayerInput(input);
-                } while (!string.IsNullOrEmpty(input));
-                gtime++;
-            }
-        }
-
-        public static void InitializeWorld() {
-            // Initialize world
-            entities = new List<Entity>();
-            Hero[] heroes = new Hero[6];
-            for (int i = 0; i < heroes.Length; i++) {
-                heroes[i] = new Hero("Lord " + NumberToWords(lastId + 1), 3, new Vector2());
-            }
-            entities.AddRange(heroes);
-=======
             InitializeEntities();
 
             // Update Loop
@@ -58,8 +32,7 @@ namespace Proto
             //    heroes[i] = new Hero("Lord " + NumberToWords(lastId + 1), 3, new Vector2());
             //}
             //entities.AddRange(heroes);
-
->>>>>>> origin/Redo
+            
             player = new Hero("Lord Hosenschlitz", 3, new Vector2(0, 1));
             entities.Add(player);
 
@@ -67,24 +40,6 @@ namespace Proto
             for (int i = 0; i < towns.Length; i++) {
                 double rand = ran.NextDouble() - .5d;
                 towns[i] = new Town("St. " + NumberToWords(lastId + 1), new Vector2((int)(100d * rand), GetId()));
-<<<<<<< HEAD
-            }
-            entities.AddRange(towns);
-        }
-
-        public static void Information() {
-            foreach (Hero h in entities.FindAll(h => typeof(Hero) == h.GetType())) {
-                Console.WriteLine(h.name + " is at " + h.position.ToString());
-                //Console.WriteLine("And has ID " + h.id);
-                Console.WriteLine("And has " + h.inventories[0].Count + " items.");
-            }
-            foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType())) {
-                if (gtime == 0) {
-                    Console.WriteLine(t.name + " is at " + t.position.ToString());
-                    //Console.WriteLine("And has ID " + t.id);
-                }
-=======
->>>>>>> origin/Redo
             }
             entities.AddRange(towns);
         }
@@ -98,7 +53,7 @@ namespace Proto
             foreach (Hero h in entities.FindAll(h => typeof(Hero) == h.GetType())) {
                 Console.WriteLine(h.name + " is at " + h.position.ToString());
                 //Console.WriteLine("And has ID " + h.id);
-                Console.WriteLine("And has " + h.inventory.Count + " food.");
+                Console.WriteLine("And has " + h.inventories[0].Count + " food.");
             }
             foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType())) {
                 if (gtime == 0) {
@@ -158,28 +113,6 @@ namespace Proto
             // SEND OFFER
             else if (input.Contains("createoffer")) {
                 Console.WriteLine("Create Offer.");
-
-<<<<<<< HEAD
-                try {
-                    Entity you = ChooseEntity();
-
-                    // choose items
-                    Console.WriteLine("Player:");
-                    Inventory[] mine = new Inventory[] { };
-                    mine.Initialize();
-                    ChooseItemsFromInventory(player);
-
-                    Console.WriteLine("Other Player:");
-                    Inventory[] yours = new Inventory[] { };
-                    yours.Initialize();
-                    ChooseItemsFromInventory(you);
-
-                    you.offers.Add(new Offer(player, you, mine, yours));
-
-                } catch (InvalidInputException ex) {
-                    Console.WriteLine("Invalid Input.");
-                }
-=======
                 //try {
                 //    Entity you = ChooseEntity();
 
@@ -202,8 +135,7 @@ namespace Proto
             } 
             // ADD FOOD
             else if (input.Contains("addfood")) {
-                player.inventory.Add(new Food());
->>>>>>> origin/Redo
+                player.inventories[0].Add(new Food());
             }
             // ACCEPT OFFER
             else if (input.Contains("acceptoffer")) {
