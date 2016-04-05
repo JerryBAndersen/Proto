@@ -26,7 +26,7 @@ namespace Proto.Misc {
             }
         }
 
-        public Inventory(string name, int capacity) {
+        public Inventory(string name, int capacity) : base() {
             this.name = name;
             this.Capacity = capacity;
         }

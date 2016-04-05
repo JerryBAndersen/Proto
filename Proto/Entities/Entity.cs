@@ -54,23 +54,5 @@ namespace Proto.Entities
                 Program.Kill(target);
             }
         }
-
-        public bool Trade(Entity partner, Offer o) {
-            if (partner.TestOffer(o)) {
-                o.Apply();
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        public bool TestOffer(Offer offer) {
-            if (offer.you.strength > (int) (offer.me.strength*1.5f)) {
-                offer.accepted = true;
-                return true;
-            } else {
-                return false;
-            }
-        }
     }
 }

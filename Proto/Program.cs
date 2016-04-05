@@ -34,7 +34,14 @@ namespace Proto
             //entities.AddRange(heroes);
             
             player = new Hero("Lord Hosenschlitz", 3, new Vector2(0, 1));
+            player.inventories[0].Add(new Food());
             entities.Add(player);
+
+
+            Hero npc = new Hero("Lord Hasenfuß", 3, new Vector2(0, 1));
+            npc.inventories[0].Add(new Food());
+            npc.inventories[0].Add(new Food());
+            entities.Add(npc);
 
             Town[] towns = new Town[64];
             for (int i = 0; i < towns.Length; i++) {
@@ -48,11 +55,9 @@ namespace Proto
             Console.WriteLine("Tick.");
 
             // Print Locations
-
             #region printLocations
             foreach (Hero h in entities.FindAll(h => typeof(Hero) == h.GetType())) {
                 Console.WriteLine(h.name + " is at " + h.position.ToString());
-                //Console.WriteLine("And has ID " + h.id);
                 Console.WriteLine("And has " + h.inventories[0].Count + " food.");
             }
             foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType())) {
@@ -113,25 +118,9 @@ namespace Proto
             // SEND OFFER
             else if (input.Contains("createoffer")) {
                 Console.WriteLine("Create Offer.");
-                //try {
-                //    Entity you = ChooseEntity();
-
-                //    try {
-                //        mine[Storable.ID.Food.GetHashCode()].Add(new Food());
-                //    } catch {
-                //        throw new InvalidInputException();
-                //    }
-
-                //    Offer offer = new Offer(player, you, mine, yours);
-                //    if (you.TestOffer(offer)) {
-                //        offer.Apply();
-                //        Console.WriteLine("Offer accepted.");
-                //    } else {
-                //        Console.WriteLine("Offer denied.");
-                //    }
-                //} catch (InvalidInputException ex) {
-                //    Console.WriteLine("Invalid Input.");
-                //}
+                Entity you = ChooseEntity();
+                Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
+                you.offers.Add(offer);
             } 
             // ADD FOOD
             else if (input.Contains("addfood")) {
@@ -199,6 +188,7 @@ namespace Proto
 
         public static Entity ChooseEntity() {
             // choose partner
+            PrintEntities(entities);
             Console.WriteLine("Who do you want to trade with?");
             int id = 0;
             string partner = Console.ReadLine();
@@ -206,6 +196,12 @@ namespace Proto
                 return entities[id];
             } else {
                 throw new InvalidInputException(); 
+            }
+        }
+
+        public static void PrintEntities(List<Entity> es) {
+            for (int i = 0; i < es.Count; i++) {
+                Console.WriteLine("entities[" + i + "]: name:" + es[i].name);
             }
         }
 

@@ -12,10 +12,10 @@ namespace Proto.Entities
         public Town(string name, Vector2 position) {
             this.name = name;
             this.position = position;
-            inventory = new Inventory(200);
-            money = new Inventory(10000);
-            party = new Inventory(10);
-            promises = new Inventory(10);
+            inventories[0] = new Inventory("storage", 1000);
+            inventories[1] = new Inventory("money", 10000);
+            inventories[2] = new Inventory("party", 1000);
+            inventories[3] = new Inventory("promises", 10);
         }
     }
 }
