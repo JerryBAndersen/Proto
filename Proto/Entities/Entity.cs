@@ -32,7 +32,11 @@ namespace Proto.Entities
         public int health;
         public int strength;
         public Vector2 position;
-        public Inventory inventory, money, party, promises;
+        /// <summary>
+        /// Inventories contain storage [0], money [1], party [2], promises [3], ...
+        /// </summary>
+        public Inventory[] inventories = new Inventory[4];
+        public List<Offer> offers;
 
         public Entity() {
             id = Program.GetId();
@@ -40,10 +44,8 @@ namespace Proto.Entities
             health = 100;
             strength = 0;
             position = Vector2.zero;
-            inventory = new Inventory(0);
-            money = new Inventory(0);
-            party = new Inventory(0);
-            promises = new Inventory(0);
+            inventories.Initialize();
+            offers = new List<Offer>();
         }
 
         public void Attack(Entity target) {
