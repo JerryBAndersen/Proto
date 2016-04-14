@@ -33,17 +33,17 @@ namespace Proto
             //}
             //entities.AddRange(heroes);
             
-            player = new Hero("Lord Hosenschlitz", 3, new Vector2(0, 1));
+            player = new Hero("Lord Hosenschlitz", 50, new Vector2(0, 1));
             player.inventories[0].Add(new Food());
             entities.Add(player);
 
 
-            Hero npc = new Hero("Lord Hasenfuß", 3, new Vector2(0, 1));
+            Hero npc = new Hero("Lord Hasenfuß", 51, new Vector2(0, 1));
             npc.inventories[0].Add(new Food());
             npc.inventories[0].Add(new Food());
             entities.Add(npc);
 
-            Town[] towns = new Town[64];
+            Town[] towns = new Town[3];
             for (int i = 0; i < towns.Length; i++) {
                 double rand = ran.NextDouble() - .5d;
                 towns[i] = new Town("St. " + NumberToWords(lastId + 1), new Vector2((int)(100d * rand), GetId()));
@@ -54,7 +54,14 @@ namespace Proto
         private static void UpdateLogic() {
             Console.WriteLine("Tick.");
 
-            // Print Locations
+            // Environment logic
+            foreach (Entity t in entities) {
+                if (t.GetType() == typeof(Town)) {
+                    t.inventories[0].Add(new Food());
+                }                
+            }
+
+            // Print locations
             #region printLocations
             foreach (Hero h in entities.FindAll(h => typeof(Hero) == h.GetType())) {
                 Console.WriteLine(h.name + " is at " + h.position.ToString());
@@ -62,13 +69,13 @@ namespace Proto
             }
             foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType())) {
                 if (gtime == 0) {
-                    Console.WriteLine(t.name + " is at " + t.position.ToString());
+                    //Console.WriteLine(t.name + " is at " + t.position.ToString());
                     //Console.WriteLine("And has ID " + t.id);
                 }
             }
             #endregion
 
-            // Handle Dummy AI
+            // Handle dummy AI
             #region dummyai
             foreach (Entity h in entities) {
                 if (h != player) {
@@ -80,6 +87,12 @@ namespace Proto
                         }
                     }
                 }
+                if (gtime == 12) {
+                    Hero ai = entities.Find(p => p.name == "Lord Hosenschlitz") as Hero;
+                    ai.inventories[0].Add(new Food(), 10);
+                    Offer o = new Offer(ai, player, ai.inventories, player.inventories);
+
+                }
             } 
             #endregion
 
@@ -88,7 +101,15 @@ namespace Proto
             do {
                 Console.WriteLine("Input:");
                 input = Console.ReadLine();
-                PlayerInput(input);
+                if (entities.IndexOf(player) > -1) {
+                    try {
+                        PlayerInput(input);
+                    } catch(InvalidInputException ie) {
+                        Console.WriteLine("Invalid input.");
+                    }                    
+                } else {
+                    Console.WriteLine("Player isn't alive anymore.");
+                }
             } while (!string.IsNullOrEmpty(input));
             gtime++;
         }                
@@ -116,9 +137,26 @@ namespace Proto
                     Console.WriteLine("No valid move");
                 }
             }
+            // VIEW
+            else if (input.Contains("view")) {
+                PrintEntities(entities);
+            }
+            // KILL
+            else if (input.Contains("kill")) {
+                Entity target = ChooseEntity();
+                Kill(target);
+            }
+            // GETTYPE
+            else if (input.Contains("type")) {
+                Entity target = ChooseEntity();
+                Console.WriteLine("Type: " + target.GetType().ToString());
+                Console.WriteLine("DeadHero? " + (target.GetType() == typeof(DeadHero) ? "true":"false"));
+            }
             // ATTACK
             else if (input.Contains("attack")) {
-                Console.WriteLine("Todo: Attack");
+                Console.WriteLine("Choose entity to attack:");
+                Entity target = ChooseEntity();
+                player.Attack(target);
             }
             // ADD FOOD
             else if (input.Contains("playeraddfood")) {
@@ -134,12 +172,38 @@ namespace Proto
             else if (input.Contains("createoffer")) {
                 Console.WriteLine("Create Offer.");
                 Entity you = ChooseEntity();
-                Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
-                you.offers.Add(offer);
-            } 
+                if (player.position.Equals(you.position)) {
+                    Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
+                    you.offers.Add(offer);
+                } else {
+                    Console.WriteLine(you.name + " is not in range.");
+                }
+            }
             // ADD FOOD
             else if (input.Contains("addfood")) {
                 player.inventories[0].Add(new Food());
+            }
+            // VIEW OFFER
+            else if (input.Contains("viewoffer")) {
+                Console.WriteLine("View Offer.");
+                for (int i = 0; i < player.offers.Count; i++) {
+                    Console.WriteLine("Offer " + i + ": " + player.offers[i].GetHashCode());
+                }
+                Console.WriteLine("Enter offer hash to accept:");
+                string offerHash = Console.ReadLine();
+                foreach (Offer o in player.offers) {
+                    if (o.GetHashCode().ToString() == offerHash) {
+                        Console.WriteLine("Offer between " + o.me.name + " and " + o.you.name + ":");
+                        Console.WriteLine(o.me.name + " offers:");
+                        foreach (Inventory i in o.me.inventories) {
+                            i.PrintContents();
+                        }
+                        Console.WriteLine("for:");
+                        foreach (Inventory i in o.you.inventories) {
+                            i.PrintContents();
+                        }
+                    }
+                }
             }
             // ACCEPT OFFER
             else if (input.Contains("acceptoffer")) {
@@ -155,7 +219,7 @@ namespace Proto
                             o.Apply();
                         }
                     }
-                }                
+                }
             }
             // REJECT OFFER
             else if (input.Contains("rejectoffer")) {
@@ -209,10 +273,9 @@ namespace Proto
         public static Entity ChooseEntity() {
             // choose partner
             PrintEntities(entities);
-            Console.WriteLine("Who do you want to trade with?");
-            int id = 0;
+            int id = -1;
             string partner = Console.ReadLine();
-            if (Int32.TryParse(partner, out id) || entities[id] != null) {
+            if (string.IsNullOrEmpty(partner) && Int32.TryParse(partner, out id) && entities[id] != null) {
                 return entities[id];
             } else {
                 throw new InvalidInputException(); 
@@ -221,7 +284,7 @@ namespace Proto
 
         public static void PrintEntities(List<Entity> es) {
             for (int i = 0; i < es.Count; i++) {
-                Console.WriteLine("entities[" + i + "]: name:" + es[i].name);
+                Console.WriteLine("entities[" + i + "]: name:" + es[i].name + " health: " + es[i].health + " type:" + es[i].GetType().ToString());
             }
         }
 
@@ -230,14 +293,18 @@ namespace Proto
         }
 
         public static void Kill(Entity e) {
-            if (e.GetType() == typeof(Hero)) {
-                entities[entities.IndexOf(e)] = new DeadHero((Hero)e);
-            } else if (e.GetType() == typeof(Town)) {
-                entities[entities.IndexOf(e)] = new DeadTown((Town)e);
+            int index = entities.IndexOf(e);
+            if (index > -1) {
+                if (e.GetType() == typeof(Hero)) {
+                    entities.Insert(index, new DeadHero(e as Hero));
+                    entities.RemoveAt(index + 1);
+                } else if (e.GetType() == typeof(Town)) {
+                    entities.Insert(index, new DeadTown(e as Town));
+                    entities.RemoveAt(index + 1);
+                }
             }
-            
         }
-
+                
         public static string NumberToWords(int number)
         {
             if (number == 0)

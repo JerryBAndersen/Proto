@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 namespace Proto.Entities
 {
     class DeadHero : Entity {
-        private Hero h;
+        public Hero h;
 
         public DeadHero(Hero h) {
             this.h = h;
+            this.name = h.name + "'s corpse";
+            this.health = 0;
+            h.health = 0;
         }
     }
 }

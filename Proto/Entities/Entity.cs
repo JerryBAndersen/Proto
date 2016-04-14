@@ -22,6 +22,10 @@ namespace Proto.Entities
             return "(" + x + "," + y + ")";
         }
 
+        public bool Equals(Vector2 other) {
+            return this.x == other.x && this.y == other.y;
+        }
+
         public static Vector2 zero = new Vector2(0, 0);
     }
 
@@ -49,10 +53,42 @@ namespace Proto.Entities
         }
 
         public void Attack(Entity target) {
-            target.health = target.health - Math.Max(0, this.strength - target.strength);
-            if (target.health < 1) {
-                Program.Kill(target);
+            if (this.strength == target.strength) {
+                if (DateTime.Now.Second % 10 < 5) {
+                    target.health = target.health - this.strength;
+                    if (target.health < 1) {
+                        Program.Kill(target);
+                    }
+                    this.health = this.health - target.strength;
+                    if (this.health < 1) {
+                        Program.Kill(this);
+                        Console.WriteLine("kill ref to self");
+                    }
+                } else {
+                    this.health = this.health - target.strength;
+                    if (this.health < 1) {
+                        Program.Kill(this);
+                        Console.WriteLine("kill ref to self");
+                    }
+                    target.health = target.health - this.strength;
+                    if (target.health < 1) {
+                        Program.Kill(target);
+                    }
+                }
+            } else {
+                this.health = this.health - target.strength;
+                if (this.health < 1) {
+                    Program.Kill(this);
+                    Console.WriteLine("kill ref to self");
+                    return;
+                }
+                target.health = target.health - this.strength;
+                if (target.health < 1) {
+                    Program.Kill(target);
+                    return;
+                }
             }
         }
+
     }
 }

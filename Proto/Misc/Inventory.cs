@@ -37,12 +37,24 @@ namespace Proto.Misc {
             }
             return true;
         }
+        public bool TryAdd(Storable item, int count) {
+            if (FreeCapacity < count) {
+                return false;
+            }
+            return true;
+        }
 
         public bool TryRemove(Storable item) {
             if (!this.Contains(item)) {
                 return false;
             }
             return true;
+        }
+
+        public void Add(Storable item, int count) {            
+            for (int i = 0; i < count; i++) {
+                Add(item);
+            }
         }
 
         public void Transfer(Storable storable, Inventory to) {            
@@ -102,6 +114,12 @@ namespace Proto.Misc {
                 return false;
             }
             return true;
+        }
+
+        public void PrintContents() {
+            foreach (Storable s in this) {
+                Console.WriteLine(s.GetType());
+            }
         }
     }
 }

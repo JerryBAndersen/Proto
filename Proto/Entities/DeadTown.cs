@@ -10,6 +10,8 @@ namespace Proto.Entities {
 
         public DeadTown(Town t) {
             this.t = t;
+            this.health = 0;
+            this.name = "Ruins of " + t.name;
         }
     }
 }
