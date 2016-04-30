@@ -35,15 +35,27 @@ namespace Proto.Misc
         }
 
         public void Apply() {
-            // for each inventory in my offer
+            //// for each inventory in my offer
             for (int i = 0; i < mine.Length; i++) {
-                me.inventories[i].RemoveInventory(mine[i]);
-                you.inventories[i].AddInventory(mine[i]);
+                if (me.inventories[i].TryRemoveInventory(mine[i]) && you.inventories[i].TryAddInventory(mine[i])) {                    
+                    me.inventories[i].RemoveInventory(mine[i]);
+                    Console.WriteLine("Removed items from " + me.name + "'s inventory.");
+                    you.inventories[i].AddInventory(mine[i]);
+                    Console.WriteLine("Added items to " + you.name + "'s inventory.");
+                } else {
+                    throw new Exception();
+                }
             }
             // for each inventory in your offer
             for (int i = 0; i < mine.Length; i++) {
-                you.inventories[i].RemoveInventory(yours[i]);
-                me.inventories[i].AddInventory(yours[i]);
+                if (you.inventories[i].TryRemoveInventory(yours[i]) && me.inventories[i].TryAddInventory(yours[i])) {
+                    you.inventories[i].RemoveInventory(yours[i]);
+                    Console.WriteLine("Removed items from " + you.name + "'s inventory.");
+                    me.inventories[i].AddInventory(yours[i]);
+                    Console.WriteLine("Added items to " + me.name + "'s inventory.");
+                } else {
+                    throw new Exception();
+                }
             }
         }
 

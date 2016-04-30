@@ -29,8 +29,7 @@ namespace Proto.Entities
         public static Vector2 zero = new Vector2(0, 0);
     }
 
-    class Entity
-    {
+    class Entity {
         public string name;
         public int id;
         public int health;
@@ -89,6 +88,5 @@ namespace Proto.Entities
                 }
             }
         }
-
     }
 }

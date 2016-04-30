@@ -55,11 +55,14 @@ namespace Proto
             Console.WriteLine("Tick.");
 
             // Environment logic
+            #region environment
+            // Generate Food in towns
             foreach (Entity t in entities) {
                 if (t.GetType() == typeof(Town)) {
                     t.inventories[0].Add(new Food());
-                }                
-            }
+                }
+            } 
+            #endregion
 
             // Print locations
             #region printLocations
@@ -69,8 +72,8 @@ namespace Proto
             }
             foreach (Town t in entities.FindAll(t => typeof(Town) == t.GetType())) {
                 if (gtime == 0) {
-                    //Console.WriteLine(t.name + " is at " + t.position.ToString());
-                    //Console.WriteLine("And has ID " + t.id);
+                    Console.WriteLine(t.name + " is at " + t.position.ToString());
+                    Console.WriteLine("And has " + t.inventories[0].Count + " food.");
                 }
             }
             #endregion
@@ -87,16 +90,18 @@ namespace Proto
                         }
                     }
                 }
-                if (gtime == 12) {
-                    Hero ai = entities.Find(p => p.name == "Lord Hosenschlitz") as Hero;
-                    ai.inventories[0].Add(new Food(), 10);
-                    Offer o = new Offer(ai, player, ai.inventories, player.inventories);
-
-                }
-            } 
+            }
+            if (gtime == 2) {
+                Hero ai = entities.Find(p => p.name == "Lord Hasenfuß") as Hero;
+                ai.inventories[0].Add(new Food(), 10);
+                Offer o = new Offer(ai, player, ai.inventories, player.inventories);
+                player.offers.Add(o);
+                Console.WriteLine("Offer sent to " + o.you.name + " from " + o.me.name);
+            }
             #endregion
 
             // Input handling
+            #region inputhandling
             string input = "";
             do {
                 Console.WriteLine("Input:");
@@ -104,13 +109,15 @@ namespace Proto
                 if (entities.IndexOf(player) > -1) {
                     try {
                         PlayerInput(input);
-                    } catch(InvalidInputException ie) {
+                    } catch (InvalidInputException ie) {
                         Console.WriteLine("Invalid input.");
-                    }                    
+                    }
                 } else {
                     Console.WriteLine("Player isn't alive anymore.");
                 }
-            } while (!string.IsNullOrEmpty(input));
+            } while (!string.IsNullOrEmpty(input)); 
+            #endregion
+
             gtime++;
         }                
 
@@ -140,6 +147,12 @@ namespace Proto
             // VIEW
             else if (input.Contains("view")) {
                 PrintEntities(entities);
+            }
+            // INVENTORY
+            else if (input.Contains("inventory")) {
+                Entity target = ChooseEntity();
+                Console.WriteLine(target.name + "'s inventory contains:");
+                target.inventories[0].PrintContents();
             }
             // KILL
             else if (input.Contains("kill")) {
@@ -175,6 +188,7 @@ namespace Proto
                 if (player.position.Equals(you.position)) {
                     Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
                     you.offers.Add(offer);
+                    Console.WriteLine("Offer sent to " + offer.you.name + " from " + offer.me.name);
                 } else {
                     Console.WriteLine(you.name + " is not in range.");
                 }
@@ -184,26 +198,30 @@ namespace Proto
                 player.inventories[0].Add(new Food());
             }
             // VIEW OFFER
-            else if (input.Contains("viewoffer")) {
+            else if (input.Contains("voffer")) {
                 Console.WriteLine("View Offer.");
                 for (int i = 0; i < player.offers.Count; i++) {
                     Console.WriteLine("Offer " + i + ": " + player.offers[i].GetHashCode());
                 }
                 Console.WriteLine("Enter offer hash to accept:");
                 string offerHash = Console.ReadLine();
-                foreach (Offer o in player.offers) {
-                    if (o.GetHashCode().ToString() == offerHash) {
-                        Console.WriteLine("Offer between " + o.me.name + " and " + o.you.name + ":");
-                        Console.WriteLine(o.me.name + " offers:");
-                        foreach (Inventory i in o.me.inventories) {
-                            i.PrintContents();
-                        }
-                        Console.WriteLine("for:");
-                        foreach (Inventory i in o.you.inventories) {
-                            i.PrintContents();
+                if (!string.IsNullOrEmpty(offerHash)) {
+                    foreach (Offer o in player.offers) {
+                        if (o.GetHashCode().ToString() == offerHash) {
+                            Console.WriteLine("Offer between " + o.me.name + " and " + o.you.name + ":");
+                            Console.WriteLine(o.me.name + " offers:");
+                            foreach (Inventory i in o.me.inventories) {
+                                i.PrintContents();
+                            }
+                            Console.WriteLine("for:");
+                            foreach (Inventory i in o.you.inventories) {
+                                i.PrintContents();
+                            }
                         }
                     }
-                }
+                } else {
+                    throw new InvalidInputException();
+                }                
             }
             // ACCEPT OFFER
             else if (input.Contains("acceptoffer")) {
@@ -213,13 +231,22 @@ namespace Proto
                 }
                 Console.WriteLine("Enter offer hash to accept:");
                 string offerHash = Console.ReadLine();
-                foreach (Offer o in player.offers) {
-                    if (o.GetHashCode().ToString() == offerHash) {
-                        if (o.TryApply()) {
-                            o.Apply();
+                int index = -1;
+                if (Int32.TryParse(offerHash, out index) && index > -1 && index < player.offers.Count) {
+                    if (player.offers[index] != null && player.offers[index].TryApply()) {
+                        player.offers[index].Apply();
+                    } else {
+                        throw new Exception();
+                    }
+                } else {
+                    foreach (Offer o in player.offers) {
+                        if (o.GetHashCode().ToString() == offerHash) {
+                            if (o.TryApply()) {
+                                o.Apply();
+                            }
                         }
                     }
-                }
+                }                
             }
             // REJECT OFFER
             else if (input.Contains("rejectoffer")) {
@@ -275,7 +302,7 @@ namespace Proto
             PrintEntities(entities);
             int id = -1;
             string partner = Console.ReadLine();
-            if (string.IsNullOrEmpty(partner) && Int32.TryParse(partner, out id) && entities[id] != null) {
+            if (!string.IsNullOrEmpty(partner) && Int32.TryParse(partner, out id) && entities[id] != null) {
                 return entities[id];
             } else {
                 throw new InvalidInputException(); 

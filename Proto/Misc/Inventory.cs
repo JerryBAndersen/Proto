@@ -89,8 +89,8 @@ namespace Proto.Misc {
         }
 
         public void RemoveInventory(Inventory inv) {
-            foreach (Storable s in inv) {
-                this.Remove(s);
+            for (int i = inv.Count-1; i > 0; i--) {
+                this.Remove(inv[i]);
             }
         }
 
