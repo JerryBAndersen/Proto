@@ -105,7 +105,7 @@ namespace Proto.Misc {
 
         public void AddInventory(Inventory inv) {
             foreach (Storable s in inv) {
-                this.Add(s);
+                this.Add(s);                
             }
         }
 
