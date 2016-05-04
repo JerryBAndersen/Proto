@@ -22,25 +22,25 @@ namespace Proto.Misc
         public bool TryApply() {
             // check if the offer could be applied
             for (int i = 0; i < mine.Length; i++) {
-                if (!(me.inventories[i].TryRemoveInventory(mine[i]) && you.inventories[i].TryAddInventory(mine[i]))) {
+                if (!(me.inventories[i].TryRemove(mine[i]) && you.inventories[i].TryAdd(mine[i]))) {
                     return false;
                 }
             }
             for (int i = 0; i < mine.Length; i++) {
-                if (!(you.inventories[i].TryRemoveInventory(yours[i]) && me.inventories[i].TryAddInventory(yours[i]))) {
+                if (!(you.inventories[i].TryRemove(yours[i]) && me.inventories[i].TryAdd(yours[i]))) {
                     return false;
                 }
             }
             return true;
         }
 
-        public void Apply() {
+        public void Apply(){
             // for each inventory in my offer
             for (int i = 0; i < mine.Length; i++) {
-                if (me.inventories[i].TryRemoveInventory(mine[i]) && you.inventories[i].TryAddInventory(mine[i])) {           
-                    you.inventories[i].AddInventory(mine[i]);
+                if (me.inventories[i].TryRemove(mine[i]) && you.inventories[i].TryAdd(mine[i])) {           
+                    you.inventories[i].Add(mine[i]);
                     Console.WriteLine("Added " + mine[i].Count + " items to " + you.name + "'s inventory[" + i + "].");
-                    me.inventories[i].RemoveInventory(mine[i]);
+                    me.inventories[i].Remove(mine[i]);
                     Console.WriteLine("Removed " + mine[i].Count + " items from " + me.name + "'s inventory[" + i + "].");
                 } else {
                     throw new Exception();
@@ -48,10 +48,10 @@ namespace Proto.Misc
             }
             // for each inventory in your offer
             for (int i = 0; i < yours.Length; i++) {
-                if (you.inventories[i].TryRemoveInventory(yours[i]) && me.inventories[i].TryAddInventory(yours[i])) {
-                    me.inventories[i].AddInventory(yours[i]);
+                if (you.inventories[i].TryRemove(yours[i]) && me.inventories[i].TryAdd(yours[i])) {
+                    me.inventories[i].Add(yours[i]);
                     Console.WriteLine("Added " + yours[i].Count + " items to " + me.name + "'s inventory[" + i + "].");
-                    you.inventories[i].RemoveInventory(yours[i]);
+                    you.inventories[i].Remove(yours[i]);
                     Console.WriteLine("Removed " + yours[i].Count + " items from " + you.name + "'s inventory[" + i + "].");
                 } else {
                     throw new Exception();

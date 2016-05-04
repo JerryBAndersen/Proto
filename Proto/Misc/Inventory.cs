@@ -43,6 +43,12 @@ namespace Proto.Misc {
             }
             return true;
         }
+        public bool TryAdd(Inventory inv) {
+            if (inv.Count > this.FreeCapacity) {
+                return false;
+            }
+            return true;
+        }
 
         public bool TryRemove(Storable item) {
             if (!this.Contains(item)) {
@@ -50,10 +56,30 @@ namespace Proto.Misc {
             }
             return true;
         }
+        public bool TryRemove(Inventory inv) {
+            foreach (Storable s in inv) {
+                if (!this.TryRemove(s)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void Remove(Inventory inv) {
+            for (int i = inv.Count - 1; i > 0; i--) {
+                this.Remove(inv[i]);
+            }
+        }
 
         public void Add(Storable item, int count) {            
             for (int i = 0; i < count; i++) {
                 Add(item);
+            }
+        }
+
+        public void Add(Inventory inv) {
+            foreach (Storable s in inv) {
+                this.Add(s);
             }
         }
 
@@ -84,34 +110,6 @@ namespace Proto.Misc {
                 if (!to.TryAdd(s)) {
                     return false;
                 }
-            }
-            return true;
-        }
-
-        public void RemoveInventory(Inventory inv) {
-            for (int i = inv.Count-1; i > 0; i--) {
-                this.Remove(inv[i]);
-            }
-        }
-
-        public bool TryRemoveInventory(Inventory inv) {
-            foreach (Storable s in inv) {
-                if (!this.TryRemove(s)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public void AddInventory(Inventory inv) {
-            foreach (Storable s in inv) {
-                this.Add(s);                
-            }
-        }
-
-        public bool TryAddInventory(Inventory inv) {
-            if (inv.Count > this.FreeCapacity) {
-                return false;
             }
             return true;
         }

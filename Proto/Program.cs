@@ -86,6 +86,7 @@ namespace Proto
                     foreach (Offer o in h.offers) {
                         if (o.TryApply()) {
                             o.Apply();
+                            h.offers.Remove(o);
                             Console.WriteLine(o.you.name + " accepted offer of " + o.me.name + "!");
                         }
                     }
@@ -184,6 +185,7 @@ namespace Proto
             // SEND OFFER
             else if (input.Contains("createoffer")) {
                 Console.WriteLine("Create Offer.");
+                Console.WriteLine("With whom?");
                 Entity you = ChooseEntity();
                 if (player.position.Equals(you.position)) {
                     Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
@@ -203,7 +205,7 @@ namespace Proto
                 for (int i = 0; i < player.offers.Count; i++) {
                     Console.WriteLine("Offer " + i + ": " + player.offers[i].GetHashCode());
                 }
-                Console.WriteLine("Enter offer hash to accept:");
+                Console.WriteLine("Enter offer hash to view:");
                 string offerHash = Console.ReadLine();
                 if (!string.IsNullOrEmpty(offerHash)) {
                     foreach (Offer o in player.offers) {
@@ -243,6 +245,7 @@ namespace Proto
                         if (o.GetHashCode().ToString() == offerHash) {
                             if (o.TryApply()) {
                                 o.Apply();
+                                player.offers.Remove(o);
                             }
                         }
                     }
