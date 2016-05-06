@@ -49,6 +49,16 @@ namespace Proto.Misc {
             }
             return true;
         }
+        public void Add(Storable item, int count) {
+            for (int i = 0; i < count; i++) {
+                Add(item);
+            }
+        }
+        public void Add(Inventory inv) {
+            foreach (Storable s in inv) {
+                this.Add(s);
+            }
+        }
 
         public bool TryRemove(Storable item) {
             if (!this.Contains(item)) {
@@ -64,28 +74,10 @@ namespace Proto.Misc {
             }
             return true;
         }
-
         public void Remove(Inventory inv) {
             for (int i = inv.Count - 1; i > 0; i--) {
                 this.Remove(inv[i]);
             }
-        }
-
-        public void Add(Storable item, int count) {            
-            for (int i = 0; i < count; i++) {
-                Add(item);
-            }
-        }
-
-        public void Add(Inventory inv) {
-            foreach (Storable s in inv) {
-                this.Add(s);
-            }
-        }
-
-        public void Transfer(Storable storable, Inventory to) {            
-            to.Add(storable);
-            this.Remove(storable);
         }
 
         public bool TryTransfer(Storable storable, Inventory to) {
@@ -97,12 +89,9 @@ namespace Proto.Misc {
             }
             return true;
         }
-
-        public void TransferAll(Inventory to) {
-            foreach (Storable s in this) {
-                to.Add(s);
-            }
-            this.Clear();
+        public void Transfer(Storable storable, Inventory to) {            
+            to.Add(storable);
+            this.Remove(storable);
         }
 
         public bool TryTransferAll(Inventory to) {
@@ -112,6 +101,12 @@ namespace Proto.Misc {
                 }
             }
             return true;
+        }
+        public void TransferAll(Inventory to) {
+            foreach (Storable s in this) {
+                to.Add(s);
+            }
+            this.Clear();
         }
 
         public void PrintContents() {

@@ -10,13 +10,24 @@ namespace Proto.Misc
 {
     class Offer {
         public Entity me, you;
-        public Inventory[] mine, yours;
+        public Inventory[] mine, yours, mytemp, yourtemp;
 
         public Offer(Entity me, Entity you, Inventory[] mine, Inventory[] yours) {
             this.me = me;
             this.you = you;
             this.mine = mine;
             this.yours = yours;
+            mytemp = new Inventory[4];
+            mytemp[0] = new Inventory("storage", 100);
+            mytemp[1] = new Inventory("money", 10000);
+            mytemp[2] = new Inventory("party", 1000);
+            mytemp[3] = new Inventory("promises", 10);
+
+            yourtemp = new Inventory[4];
+            yourtemp[0] = new Inventory("storage", 100);
+            yourtemp[1] = new Inventory("money", 10000);
+            yourtemp[2] = new Inventory("party", 1000);
+            yourtemp[3] = new Inventory("promises", 10);
         }
 
         public bool TryApply() {
