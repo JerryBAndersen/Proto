@@ -8,5 +8,8 @@ namespace Proto.Storables
 {
     class Promise : Storable
     {
+        public override Storable Clone() {
+            return new Promise();
+        }
     }
 }

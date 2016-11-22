@@ -49,13 +49,20 @@
     <Compile Include="Entities\Hero.cs" />
     <Compile Include="Entities\Town.cs" />
     <Compile Include="InvalidInputException.cs" />
+    <Compile Include="Misc\Documents.cs" />
     <Compile Include="Misc\Inventory.cs" />
     <Compile Include="Misc\Offer.cs" />
+    <Compile Include="Misc\Party.cs" />
+    <Compile Include="Misc\Storage.cs" />
+    <Compile Include="Misc\Treasure.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storables\Feedable.cs" />
     <Compile Include="Storables\Food.cs" />
     <Compile Include="Storables\Gold.cs" />
+    <Compile Include="InvalidTypeException.cs" />
     <Compile Include="Storables\Man.cs" />
+    <Compile Include="Storables\Perishable.cs" />
     <Compile Include="Storables\Promise.cs" />
     <Compile Include="Storables\Storable.cs" />
   </ItemGroup>

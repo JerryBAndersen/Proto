@@ -1,4 +1,5 @@
-﻿using Proto.Storables;
+﻿using Proto.Entities;
+using Proto.Storables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,8 @@ using System.Threading.Tasks;
 namespace Proto.Misc {
     class Inventory : List<Storable>{
 
-        private string name;
+        protected string name;
+        protected Entity owner;
 
         public int FreeCapacity {
             get {
@@ -26,9 +28,25 @@ namespace Proto.Misc {
             }
         }
 
+        internal Entity Owner {
+            get {
+                return owner;
+            }
+
+            set {
+                owner = value;
+            }
+        }
+                
         public Inventory(string name, int capacity) : base() {
             this.name = name;
+
             this.Capacity = capacity;
+        }
+        public Inventory(string name, int capacity, Entity owner) : base() {
+            this.name = name;
+            this.Capacity = capacity;
+            this.owner = owner;
         }
 
         public bool TryAdd(Storable item) {
@@ -38,7 +56,13 @@ namespace Proto.Misc {
             return true;
         }
         public bool TryAdd(Storable item, int count) {
-            if (FreeCapacity < count) {
+            if (FreeCapacity < Count) {
+                return false;
+            }
+            return true;
+        }
+        public bool TryAdd<T>(int count) {
+            if (FreeCapacity < Count) {
                 return false;
             }
             return true;
@@ -49,16 +73,41 @@ namespace Proto.Misc {
             }
             return true;
         }
-        public void Add(Storable item, int count) {
-            for (int i = 0; i < count; i++) {
-                Add(item);
-            }
-        }
+        //public void Add(Storable item, int count) {
+        //    for (int i = 0; i < count; i++) {
+        //        Storable clone = item.Clone();
+        //        Add(clone);
+        //    }
+        //}
         public void Add(Inventory inv) {
             foreach (Storable s in inv) {
                 this.Add(s);
             }
         }
+        public void Add<T>(int count) {
+            Storable.SType t = Storable.DetermineType(typeof(T));
+            for (int i = 0; i < count; i++) {
+                switch (t) {
+                    case Storable.SType.Food: {
+                            Add(new Food());
+                            break;
+                        }
+                    case Storable.SType.Gold: {
+                            Add(new Gold());
+                            break;
+                        }
+                    case Storable.SType.Man: {
+                            Add(new Man());
+                            break;
+                        }
+                    case Storable.SType.Promise: {
+                            Add(new Promise());
+                            break;
+                        }
+                }
+            }
+        }
+
 
         public bool TryRemove(Storable item) {
             if (!this.Contains(item)) {
@@ -95,10 +144,9 @@ namespace Proto.Misc {
         }
 
         public bool TryTransferAll(Inventory to) {
-            foreach (Storable s in this) {
-                if (!to.TryAdd(s)) {
-                    return false;
-                }
+            ForEach(stor => TryTransfer(stor,to));
+            if (to.FreeCapacity < Count) {
+                return false;
             }
             return true;
         }
@@ -113,6 +161,16 @@ namespace Proto.Misc {
             foreach (Storable s in this) {
                 Console.WriteLine(s.GetType());
             }
+        }
+
+        public int CountStorables<T>() {
+            int count = 0;
+            foreach (Storable s in this) {
+                if (s is T) {
+                    count++;
+                }
+            }
+            return count;
         }
     }
 }

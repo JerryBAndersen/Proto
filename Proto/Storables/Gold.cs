@@ -8,5 +8,8 @@ namespace Proto.Storables
 {
     class Gold : Storable
     {
+        public override Storable Clone() {
+            return new Gold();
+        }
     }
 }
