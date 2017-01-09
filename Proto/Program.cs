@@ -8,9 +8,9 @@ namespace Proto
 {
     class Program
     {
-        //static int gtime = 0;
-        //static int lastId = 0;
-        //static List<Entity> entities;
+        static int gameTime = 0;
+        static int lastId = 0;
+        static List<Entity> entities;
         //static Hero player;
         //static Town[] towns;
         //static Random ran = new Random();
@@ -22,6 +22,7 @@ namespace Proto
             // Update Loop
             while (true) {
                 UpdateLogic();
+                gameTime++;
             }
         }
 
@@ -36,7 +37,7 @@ namespace Proto
                 input = Console.ReadLine();
                 try
                 {
-                    PlayerInput(input);
+                    Input(input);
                 }
                 catch (InvalidInputException ie)
                 {
@@ -45,25 +46,164 @@ namespace Proto
             } while (!string.IsNullOrEmpty(input));
             #endregion
         }
-
-        private static void PlayerInput(string input)
-        {
-            
-        }
-
+                
         private static void InitializeEntities()
         {
             
         }
 
-        internal static void Kill(Entity target)
-        {
-            throw new NotImplementedException();
+        public static void Kill(Entity e) {
+            int index = entities.IndexOf(e);
+            if (index > -1) {
+                if (e.GetType() == typeof(Hero)) {
+                    entities.Insert(index, new DeadHero(e as Hero));
+                    entities.RemoveAt(index + 1);
+                } else if (e.GetType() == typeof(Town)) {
+                    entities.Insert(index, new DeadTown(e as Town));
+                    entities.RemoveAt(index + 1);
+                }
+            }
         }
 
-        internal static int GetId()
+        public static int CreateId()
         {
-            throw new NotImplementedException();
+            lastId++;
+            return lastId;
+        }
+
+        public static void Input(string input) {
+            // MOVE
+            if (input.StartsWith("-move")) {
+                
+
+                //bool validx = false, validy = false;
+                //int x = 0, y = 0;
+                //foreach (string s in input.Split(' ')) {
+                //    if (!validx) {
+                //        if (Int32.TryParse(s, out x)) {
+                //            validx = true;
+                //        }
+                //    } else {
+                //        if (Int32.TryParse(s, out y)) {
+                //            validy = true;
+                //        }
+                //    }
+
+                //}
+                //if (validx && validy) {
+                //    player.Move(new Vector2(x, y));
+                //} else {
+                //    Console.WriteLine("No valid move");
+                //}
+            }
+            // VIEW
+            else if (input.StartsWith("-view")) {
+                //PrintEntities(entities);
+            }
+            // INVENTORY
+            else if (input.StartsWith("-inventory")) {
+                //Entity target = ChooseEntity();
+                //Console.WriteLine(target.name + "'s inventory contains:");
+                //target.inventories[0].PrintContents();
+            }
+            // KILL
+            else if (input.StartsWith("-kill")) {
+                //Entity target = ChooseEntity();
+                //Kill(target);
+            }
+            // GETTYPE
+            else if (input.StartsWith("-type")) {
+                //Entity target = ChooseEntity();
+                //Console.WriteLine("Type: " + target.GetType().ToString());
+                //Console.WriteLine("DeadHero? " + (target.GetType() == typeof(DeadHero) ? "true" : "false"));
+            }
+            // ATTACK
+            else if (input.StartsWith("-attack")) {
+                //Console.WriteLine("Choose entity to attack:");
+                //Entity target = ChooseEntity();
+                //player.Attack(target);
+            }
+            // ADD FOOD TO PLAYER
+            else if (input.StartsWith("-playeraddfood")) {
+                Console.WriteLine("Add Food to Player.");
+                //if (player.inventories[0].TryAdd(new Food())) {
+                //    player.inventories[0].Add(new Food());
+                //} else {
+                //    Console.WriteLine("Can't add Food to Player.");
+                //}
+
+            }
+            // SEND OFFER
+            else if (input.StartsWith("-create-offer")) {
+                Console.WriteLine("Create Offer.");
+                //Console.WriteLine("With whom?");
+                //Entity you = ChooseEntity();
+                //if (player.position.Equals(you.position)) {
+                //    Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
+                //    you.offers.Add(offer);
+                //    Console.WriteLine("Offer sent to " + offer.you.name + " from " + offer.me.name);
+                //} else {
+                //    Console.WriteLine(you.name + " is not in range.");
+                //}
+            }
+            // ADD FOOD
+            else if (input.StartsWith("-add-food")) {                
+                //player.inventories[0].Add(new Food());
+            }
+            // VIEW OFFER
+            else if (input.StartsWith("-view-offer")) {
+                Console.WriteLine("View Offer.");
+                //PrintOffers(player);
+                //Console.WriteLine("Enter offer hash to view:");
+                //string offerHash = Console.ReadLine();
+
+                //try {
+                //    Offer o = ChooseOffer(offerHash, player);
+                //    Console.WriteLine("Offer between " + o.me.name + " and " + o.you.name + ":");
+                //    Console.WriteLine(o.me.name + " offers:");
+                //    foreach (Inventory i in o.me.inventories) {
+                //        i.PrintContents();
+                //    }
+                //    Console.WriteLine("for:");
+                //    foreach (Inventory i in o.you.inventories) {
+                //        i.PrintContents();
+                //    }
+                //} catch (Exception) {
+                //    Console.WriteLine("No valid Offer.");
+                //}
+            }
+            // ACCEPT OFFER
+            else if (input.StartsWith("-accept-offer")) {
+                Console.WriteLine("Accept Offer.");
+                //PrintOffers(player);
+                //Console.WriteLine("Enter offer hash to accept:");
+                //string offerHash = Console.ReadLine();
+                //try {
+                //    Offer o = ChooseOffer(offerHash, player);
+                //    if (o.TryApply()) {
+                //        o.Apply();
+                //        player.offers.Remove(o);
+                //    }
+                //} catch (Exception) {
+                //    Console.WriteLine("No valid Offer.");
+                //}
+            }
+            // REJECT OFFER
+            else if (input.StartsWith("-reject-offer")) {
+                Console.WriteLine("Reject Offer.");
+                //PrintOffers(player);
+                //Console.WriteLine("Enter offer hash to reject:");
+                //string offerHash = Console.ReadLine();
+                //try {
+                //    Offer o = ChooseOffer(offerHash, player);
+                //    if (o.TryApply()) {
+                //        o.Apply();
+                //        player.offers.Remove(o);
+                //    }
+                //} catch (Exception) {
+                //    Console.WriteLine("No valid offer.");
+                //}
+            }
         }
 
         //private static void InitializeEntities() {
@@ -256,139 +396,6 @@ namespace Proto
         //        Offer o = new Offer(ai, player, ai.inventories, player.inventories);
         //        player.offers.Add(o);
         //        Console.WriteLine("Offer sent to " + o.you.name + " from " + o.me.name);
-        //    }
-        //}
-
-        //public static void PlayerInput(string input) {
-        //    // MOVE
-        //    if (input.Contains("move")) {
-        //        bool validx = false, validy = false;
-        //        int x = 0, y = 0;
-        //        foreach (string s in input.Split(' ')) {
-        //            if (!validx) {
-        //                if (Int32.TryParse(s, out x)) {
-        //                    validx = true;
-        //                }
-        //            } else {
-        //                if (Int32.TryParse(s, out y)) {
-        //                    validy = true;
-        //                }
-        //            }
-
-        //        }
-        //        if (validx && validy) {
-        //            player.Move(new Vector2(x, y));
-        //        } else {
-        //            Console.WriteLine("No valid move");
-        //        }
-        //    }
-        //    // VIEW
-        //    else if (input.Contains("view")) {
-        //        PrintEntities(entities);
-        //    }
-        //    // INVENTORY
-        //    else if (input.Contains("inventory")) {
-        //        Entity target = ChooseEntity();
-        //        Console.WriteLine(target.name + "'s inventory contains:");
-        //        target.inventories[0].PrintContents();
-        //    }
-        //    // KILL
-        //    else if (input.Contains("kill")) {
-        //        Entity target = ChooseEntity();
-        //        Kill(target);
-        //    }
-        //    // GETTYPE
-        //    else if (input.Contains("type")) {
-        //        Entity target = ChooseEntity();
-        //        Console.WriteLine("Type: " + target.GetType().ToString());
-        //        Console.WriteLine("DeadHero? " + (target.GetType() == typeof(DeadHero) ? "true":"false"));
-        //    }
-        //    // ATTACK
-        //    else if (input.Contains("attack")) {
-        //        Console.WriteLine("Choose entity to attack:");
-        //        Entity target = ChooseEntity();
-        //        player.Attack(target);
-        //    }
-        //    // ADD FOOD
-        //    else if (input.Contains("playeraddfood")) {
-        //        Console.WriteLine("Add Food to Player.");
-        //        if (player.inventories[0].TryAdd(new Food())) {
-        //            player.inventories[0].Add(new Food());
-        //        } else {
-        //            Console.WriteLine("Can't add Food to Player.");
-        //        }
-
-        //    }
-        //    // SEND OFFER
-        //    else if (input.Contains("createoffer")) {
-        //        Console.WriteLine("Create Offer.");
-        //        Console.WriteLine("With whom?");
-        //        Entity you = ChooseEntity();
-        //        if (player.position.Equals(you.position)) {
-        //            Offer offer = new Offer(player, you, ChooseItemsFromInventory(player), ChooseItemsFromInventory(you));
-        //            you.offers.Add(offer);
-        //            Console.WriteLine("Offer sent to " + offer.you.name + " from " + offer.me.name);
-        //        } else {
-        //            Console.WriteLine(you.name + " is not in range.");
-        //        }
-        //    }
-        //    // ADD FOOD
-        //    else if (input.Contains("addfood")) {
-        //        player.inventories[0].Add(new Food());
-        //    }
-        //    // VIEW OFFER
-        //    else if (input.Contains("voffer")) {
-        //        Console.WriteLine("View Offer.");
-        //        PrintOffers(player);
-        //        Console.WriteLine("Enter offer hash to view:");
-        //        string offerHash = Console.ReadLine();
-
-        //        try {
-        //            Offer o = ChooseOffer(offerHash, player);
-        //            Console.WriteLine("Offer between " + o.me.name + " and " + o.you.name + ":");
-        //            Console.WriteLine(o.me.name + " offers:");
-        //            foreach (Inventory i in o.me.inventories) {
-        //                i.PrintContents();
-        //            }
-        //            Console.WriteLine("for:");
-        //            foreach (Inventory i in o.you.inventories) {
-        //                i.PrintContents();
-        //            }
-        //        } catch (Exception) {
-        //            Console.WriteLine("No valid Offer.");
-        //        }
-        //    }
-        //    // ACCEPT OFFER
-        //    else if (input.Contains("acceptoffer")) {
-        //        Console.WriteLine("Accept Offer.");
-        //        PrintOffers(player);
-        //        Console.WriteLine("Enter offer hash to accept:");
-        //        string offerHash = Console.ReadLine();
-        //        try {
-        //            Offer o = ChooseOffer(offerHash, player);
-        //            if (o.TryApply()) {
-        //                o.Apply();
-        //                player.offers.Remove(o);
-        //            }
-        //        } catch (Exception) {
-        //            Console.WriteLine("No valid Offer.");
-        //        }
-        //    }
-        //    // REJECT OFFER
-        //    else if (input.Contains("rejectoffer")) {
-        //        Console.WriteLine("Reject Offer.");
-        //        PrintOffers(player);
-        //        Console.WriteLine("Enter offer hash to reject:");
-        //        string offerHash = Console.ReadLine();
-        //        try {
-        //            Offer o = ChooseOffer(offerHash, player);
-        //            if (o.TryApply()) {
-        //                o.Apply();
-        //                player.offers.Remove(o);
-        //            }
-        //        } catch (Exception) {
-        //            Console.WriteLine("No valid offer.");
-        //        }
         //    }
         //}
 

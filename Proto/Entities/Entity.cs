@@ -28,6 +28,7 @@ namespace Proto.Entities
 
         public static Vector2 zero = new Vector2(0, 0);
     }
+
     struct Relation {
         private int value;
         public Entity entity;
@@ -48,7 +49,6 @@ namespace Proto.Entities
             this.entity = entity;
         }
     }
-
     class Entity {
         public string name;
         public int id;
@@ -64,7 +64,7 @@ namespace Proto.Entities
         private List<Relation> relations;
 
         public Entity() {
-            id = Program.GetId();
+            id = Program.CreateId();
             name = id.ToString();
             health = 100;
             strength = 0;
