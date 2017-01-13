@@ -9,10 +9,10 @@ namespace Proto.Entities
 {
     class Town : Entity
     {
-        public Town(string name, Vector2 position) {
+        public Town(string name, int strength, Vector2 position) {
             this.name = name;
+            this.strength = Math.Max(strength,1000);
             this.position = position;
-            this.strength = 1000;
 
             inventories[0] = new Inventory("storage", 2000, this);
             inventories[1] = new Inventory("treasure", 10000, this);
